@@ -141,7 +141,7 @@ def is_valid_address(address):
         closest_match, score = result
         print("Closest Match", closest_match, "Score:", score)
 
-        if score > 75:  # Assuming a threshold of 75% for a "close enough" match
+        if score > 90:  # Assuming a threshold of 90% for a "close enough" match
             # Extract and return additional contextual information related to this address
             contextual_info = extract_contextual_info(closest_match)
             return True, contextual_info
