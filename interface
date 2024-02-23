@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        #chatbot-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 300px;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+}
+
+#chatbot-messages {
+    height: 200px;
+    overflow-y: auto;
+    border-bottom: 1px solid #ddd;
+    margin-bottom: 8px;
+    padding: 5px;
+}
+
+#chatbot-input {
+    width: 70%;
+    padding: 5px;
+    border: 1px solid #ddd;
+    border-radius: 2px;
+}
+
+#chatbot-send-btn {
+    width: 25%;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 2px;
+    padding: 5px;
+    cursor: pointer;
+}
+
+#chatbot-send-btn:hover {
+    background-color: #0056b3;
+}
+
+    </style>
+
+</head>
+<body>
+    <div id="chatbot-container">
+        <div id="chatbot-messages"></div>
+        <input type="text" id="chatbot-input" placeholder="Type your message here..." />
+        <button id="chatbot-send-btn">Send</button>
+    </div>
+    <script>
+        document.getElementById('chatbot-send-btn').addEventListener('click', function() {
+    var inputElement = document.getElementById('chatbot-input');
+    var message = inputElement.value;
+    inputElement.value = ''; // Clear the input field
+
+    if (message) {
+        // Display the user's message
+        document.getElementById('chatbot-messages').innerHTML += '<div>User: ' + message + '</div>';
+
+        // Replace with the URL of your Flask endpoint and update as needed
+        fetch('/ask', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                session_id: 'unique-session-id', // Replace with actual session management logic
+                input: message
+            }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Display the chatbot's response
+            document.getElementById('chatbot-messages').innerHTML += '<div>Bot: ' + data.response + '</div>';
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    }
+});
+    </script>
+</body>
+</html>
