@@ -1,26 +1,66 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Ask API</title>
+    <title>Chat with AI</title>
+    <style>
+        #chatbox {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 10px;
+            height: 300px;
+            overflow-y: auto;
+            width: 300px;
+        }
+        .user-message {
+            text-align: right;
+            color: blue;
+        }
+        .bot-message {
+            text-align: left;
+            color: green;
+        }
+    </style>
+</head>
+<body>
+    <div id="chatbox">
+        <!-- Chat messages will be added here dynamically -->
+    </div>
+    <input type="text" id="input" onkeydown="if(event.key === 'Enter') { sendRequest(); }" />
+    <button onclick="sendRequest()">Submit</button>
+
     <script>
         function sendRequest() {
             var userInput = document.getElementById("input").value;
+            // Clear the input box
+            document.getElementById("input").value = '';
+
+            // Display the user's message in the chatbox
+            var chatbox = document.getElementById("chatbox");
+            var userDiv = document.createElement("div");
+            userDiv.textContent = "You: " + userInput;
+            userDiv.className = "user-message";
+            chatbox.appendChild(userDiv);
+
             var xhr = new XMLHttpRequest();
             xhr.open("POST", "/ask", true);
             xhr.setRequestHeader("Content-Type", "application/json");
             xhr.onreadystatechange = function () {
                 if (xhr.readyState === 4 && xhr.status === 200) {
                     var response = JSON.parse(xhr.responseText);
-                    alert(response.response);
+
+                    // Display the chatbot's response in the chatbox
+                    var botDiv = document.createElement("div");
+                    botDiv.textContent = "Bot: " + response.response;
+                    botDiv.className = "bot-message";
+                    chatbox.appendChild(botDiv);
+
+                    // Scroll to the bottom of the chatbox
+                    chatbox.scrollTop = chatbox.scrollHeight;
                 }
             };
             var data = JSON.stringify({"input": userInput});
             xhr.send(data);
         }
     </script>
-</head>
-<body>
-    <input type="text" id="input" />
-    <button onclick="sendRequest()">Submit</button>
 </body>
 </html>
