@@ -21,46 +21,42 @@
         }
     </style>
 </head>
-<body>
-    <div id="chatbox">
-        <!-- Chat messages will be added here dynamically -->
-    </div>
-    <input type="text" id="input" onkeydown="if(event.key === 'Enter') { sendRequest(); }" />
-    <button onclick="sendRequest()">Submit</button>
+    <body onload="sendBotGreeting()">
+        <div id="chatbox"></div>
+        <input type="text" id="input" onkeypress="handleKeyPress(event)" />
+        <button onclick="sendUserInput()">Send</button>
 
     <script>
-        function sendRequest() {
-            var userInput = document.getElementById("input").value;
-            // Clear the input box
-            document.getElementById("input").value = '';
+        function appendMessage(who, text) {
+        var chatbox = document.getElementById("chatbox");
+        var msgDiv = document.createElement("div");
+        msgDiv.textContent = who + ": " + text;
+        chatbox.appendChild(msgDiv);
+        chatbox.scrollTop = chatbox.scrollHeight; // Scroll to the bottom
+    }
 
-            // Display the user's message in the chatbox
-            var chatbox = document.getElementById("chatbox");
-            var userDiv = document.createElement("div");
-            userDiv.textContent = "You: " + userInput;
-            userDiv.className = "user-message";
-            chatbox.appendChild(userDiv);
+    function sendBotGreeting() {
+        // Example greeting message from the bot
+        appendMessage("Bnbuddy", "Hello! I'm BnBuddy, your virtual assistant! Please provide the address of the property you are staying at.");
+    }
 
-            var xhr = new XMLHttpRequest();
+    function sendUserInput() {
+        var userInput = document.getElementById("input").value;
+        appendMessage("You", userInput); // Display user's message in the chatbox
+        document.getElementById("input").value = ''; // Clear input field
+
+        var xhr = new XMLHttpRequest();
             xhr.open("POST", "/ask", true);
             xhr.setRequestHeader("Content-Type", "application/json");
             xhr.onreadystatechange = function () {
                 if (xhr.readyState === 4 && xhr.status === 200) {
-                    var response = JSON.parse(xhr.responseText);
-
-                    // Display the chatbot's response in the chatbox
-                    var botDiv = document.createElement("div");
-                    botDiv.textContent = "Bot: " + response.response;
-                    botDiv.className = "bot-message";
-                    chatbox.appendChild(botDiv);
-
-                    // Scroll to the bottom of the chatbox
-                    chatbox.scrollTop = chatbox.scrollHeight;
-                }
-            };
-            var data = JSON.stringify({"input": userInput});
+                var response = JSON.parse(xhr.responseText);
+                appendMessage("Bot", response.response); // Display bot's response in the chatbox
+            }
+        };
+        var data = JSON.stringify({"input": userInput, "session_id": "unique_session_id"}); // Ensure you manage session_id appropriately
             xhr.send(data);
-        }
+        } 
     </script>
 </body>
 </html>
